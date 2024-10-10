@@ -1,9 +1,8 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'signup.dart';
+import 'home.dart';
 
 class Login extends StatelessWidget {
   const Login({super.key});
@@ -12,25 +11,90 @@ class Login extends StatelessWidget {
     try {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
       if (googleUser == null) {
-        // The user canceled the sign-in
         return;
       }
 
       final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-
       final OAuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
       await FirebaseAuth.instance.signInWithCredential(credential);
-
-      // Navigate to home screen or perform any other action after successful sign-in
     } catch (e) {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to sign in with Google: $e')),
       );
     }
+  }
+
+  void _showForgotPasswordModal(BuildContext context) {
+    TextEditingController emailController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: const Color(0xFF2164A1), 
+          title: const Text(
+            'Forgot Password',
+            style: TextStyle(color: Colors.green),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Enter your email to receive a password reset link:',
+                style: TextStyle(color: Colors.white),
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                controller: emailController,
+                style: const TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  hintText: 'Email',
+                  hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
+                  enabledBorder: const UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.green),
+                  ),
+                  focusedBorder: const UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.green),
+                  ),
+                ),
+                cursorColor: Colors.green,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () async {
+                try {
+                  await FirebaseAuth.instance.sendPasswordResetEmail(
+                    email: emailController.text.trim(),
+                  );
+                  // ignore: use_build_context_synchronously
+                  Navigator.of(context).pop();
+                  // ignore: use_build_context_synchronously
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Password reset email sent.')),
+                  );
+                } catch (e) {
+                  // ignore: use_build_context_synchronously
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error: $e')),
+                  );
+                }
+              },
+              child: const Text(
+                'SEND',
+                style: TextStyle(color: Colors.green),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -72,7 +136,7 @@ class Login extends StatelessWidget {
                   const SizedBox(height: 40),
                   // Username field
                   const CustomTextField(
-                    hintText: 'Username',
+                    hintText: 'Email',
                     icon: Icons.person,
                   ),
                   const SizedBox(height: 20),
@@ -82,16 +146,33 @@ class Login extends StatelessWidget {
                     icon: Icons.lock,
                     obscureText: true,
                   ),
+                  const SizedBox(height: 10),
+                  // Forgot password
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: GestureDetector(
+                      onTap: () {
+                        _showForgotPasswordModal(context);
+                      },
+                      child: const Text(
+                        'Forgot Password?',
+                        style: TextStyle(color: Colors.green),
+                      ),
+                    ),
+                  ),
                   const SizedBox(height: 40),
                   // Sign In button
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () {
-                        // Add your sign in logic here
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const Home()),
+                        );
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue[800],
+                        backgroundColor: const Color(0xFF2164A1),
                         padding: const EdgeInsets.symmetric(vertical: 15),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
@@ -99,7 +180,11 @@ class Login extends StatelessWidget {
                       ),
                       child: const Text(
                         'SIGN IN',
-                        style: TextStyle(fontSize: 18, color: Colors.green),
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF88ED8A),
+                        ),
                       ),
                     ),
                   ),

@@ -39,7 +39,7 @@ dependencies:
   firebase_auth: ^5.3.1
   google_sign_in: ^6.2.1
   cloud_firestore: ^5.4.3
-  google_maps_flutter: ^2.0.6
+  google_maps_flutter: ^2.2.0
 
 dev_dependencies:
   flutter_test:
@@ -67,6 +67,11 @@ flutter:
   - assets/images/background.png
   - assets/images/logo.png
   - assets/images/google_logo.png
+  - assets/images/bot.png
+  - assets/images/car.png
+  - assets/images/dog.png
+  - assets/images/fire.png
+  - assets/images/theft.png
 #   - images/a_dot_burr.jpeg
 #   - images/a_dot_ham.jpeg
 

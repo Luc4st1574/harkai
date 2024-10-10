@@ -1,26 +1,32 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'signup.dart';
 
-
-class RegisterScreen extends StatelessWidget {
-  const RegisterScreen({super.key});
+class Login extends StatelessWidget {
+  const Login({super.key});
 
   Future<void> _handleGoogleSignIn(BuildContext context) async {
     try {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-      if (googleUser == null) return;
+      if (googleUser == null) {
+        // The user canceled the sign-in
+        return;
+      }
 
       final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-      final credential = GoogleAuthProvider.credential(
+
+      final OAuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
       await FirebaseAuth.instance.signInWithCredential(credential);
-      // Navigate to home screen or perform any other action after successful registration
+
+      // Navigate to home screen or perform any other action after successful sign-in
     } catch (e) {
-      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to sign in with Google: $e')),
       );
@@ -56,7 +62,7 @@ class RegisterScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
                   const Text(
-                    'REGISTER',
+                    'LOGIN',
                     style: TextStyle(
                       fontSize: 40,
                       fontWeight: FontWeight.bold,
@@ -70,12 +76,6 @@ class RegisterScreen extends StatelessWidget {
                     icon: Icons.person,
                   ),
                   const SizedBox(height: 20),
-                  // Email field
-                  const CustomTextField(
-                    hintText: 'Email',
-                    icon: Icons.email,
-                  ),
-                  const SizedBox(height: 20),
                   // Password field
                   const CustomTextField(
                     hintText: 'Password',
@@ -83,12 +83,12 @@ class RegisterScreen extends StatelessWidget {
                     obscureText: true,
                   ),
                   const SizedBox(height: 40),
-                  // Sign Up button
+                  // Sign In button
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () {
-                        // Add your sign up logic here
+                        // Add your sign in logic here
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue[800],
@@ -98,13 +98,13 @@ class RegisterScreen extends StatelessWidget {
                         ),
                       ),
                       child: const Text(
-                        'SIGN UP',
+                        'SIGN IN',
                         style: TextStyle(fontSize: 18, color: Colors.green),
                       ),
                     ),
                   ),
                   const SizedBox(height: 20),
-                  // Google Register button
+                  // Google Sign In button
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton.icon(
@@ -121,23 +121,26 @@ class RegisterScreen extends StatelessWidget {
                         height: 24,
                       ),
                       label: const Text(
-                        'Register with Google',
+                        'Sign in with Google',
                         style: TextStyle(fontSize: 18, color: Colors.black87),
                       ),
                     ),
                   ),
                   const SizedBox(height: 20),
-                  // Sign In link
+                  // Register link
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text("Already have an account? "),
+                      const Text("Don't have an account? "),
                       GestureDetector(
                         onTap: () {
-                          Navigator.pop(context);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const Signup()),
+                          );
                         },
                         child: const Text(
-                          'SIGN IN',
+                          'REGISTER',
                           style: TextStyle(color: Colors.green),
                         ),
                       ),
@@ -152,7 +155,6 @@ class RegisterScreen extends StatelessWidget {
     );
   }
 }
-
 
 class CustomTextField extends StatelessWidget {
   final String hintText;

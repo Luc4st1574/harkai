@@ -44,9 +44,9 @@ class Home extends StatelessWidget {
           Image.asset('assets/images/logo.png', height: 50),
           const Row(
             children: [
-              Icon(Icons.account_circle, color: Color(0xFF00FF00), size: 30),
+              Icon(Icons.account_circle, color: Color(0xFF57D463), size: 30),
               SizedBox(width: 8),
-              Text('Lucas', style: TextStyle(color: Color(0xFF00FF00), fontSize: 18)),
+              Text('Lucas', style: TextStyle(color: Color(0xFF57D463), fontSize: 18)),
             ],
           ),
         ],
@@ -62,11 +62,11 @@ class Home extends StatelessWidget {
         children: [
           Text(
             'You are in Trujillo, Peru',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF00FF00)),
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF57D463)),
           ),
           Text(
             'This is happening in your area',
-            style: TextStyle(fontSize: 18, color: Color(0xFF00FF00)),
+            style: TextStyle(fontSize: 18, color: Color(0xFF57D463)),
           ),
         ],
       ),
@@ -175,7 +175,7 @@ class Home extends StatelessWidget {
                     color: Colors.white,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.chat, size: 20, color: Color(0xFF00FF00)),
+                  child: const Icon(Icons.chat, size: 20, color: Color(0xFF57D463)),
                 ),
               ),
             ],

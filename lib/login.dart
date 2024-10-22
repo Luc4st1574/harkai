@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -8,11 +10,10 @@ class Login extends StatefulWidget {
   const Login({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
-  _LoginState createState() => _LoginState();
+  LoginState createState() => LoginState();
 }
 
-class _LoginState extends State<Login> {
+class LoginState extends State<Login> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
@@ -39,18 +40,15 @@ class _LoginState extends State<Login> {
       await FirebaseAuth.instance.signInWithCredential(credential);
       if (!mounted) return;
 
-      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Google Sign-In successful!')),
       );
-      // Navigate to home screen or another action
+
       Navigator.pushReplacement(
-        // ignore: use_build_context_synchronously
         context,
         MaterialPageRoute(builder: (context) => const Home()),
       );
     } catch (e) {
-      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to sign in with Google: $e')),
       );
@@ -64,7 +62,7 @@ class _LoginState extends State<Login> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: const Color(0xFF2164A1),
+          backgroundColor: const Color(0xFF011935),
           title: const Text(
             'Forgot Password',
             style: TextStyle(color: Color(0xFF57D463)),
@@ -103,14 +101,11 @@ class _LoginState extends State<Login> {
                   );
                   if (!mounted) return;
 
-                  // ignore: use_build_context_synchronously
                   Navigator.of(context).pop();
-                  // ignore: use_build_context_synchronously
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Password reset email sent.')),
                   );
                 } catch (e) {
-                  // ignore: use_build_context_synchronously
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Error: $e')),
                   );
@@ -138,7 +133,6 @@ class _LoginState extends State<Login> {
       return;
     }
 
-    // Perform the login logic here, using FirebaseAuth or any other method
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Logging in...')),
     );
@@ -157,42 +151,44 @@ class _LoginState extends State<Login> {
           _buildBackgroundImage(),
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildLogo(),
-                  const SizedBox(height: 20),
-                  const Text(
-                    'LOGIN',
-                    style: TextStyle(
-                      fontSize: 40,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.green,
+              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 30.0), // Increased vertical padding
+              child: SingleChildScrollView( // Allow scrolling if content overflows
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _buildLogo(),
+                    const SizedBox(height: 30), // Increased space
+                    const Text(
+                      'LOGIN',
+                      style: TextStyle(
+                        fontSize: 40,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 40),
-                  CustomTextField(
-                    controller: _emailController,
-                    hintText: 'Email',
-                    icon: Icons.person,
-                  ),
-                  const SizedBox(height: 20),
-                  CustomTextField(
-                    controller: _passwordController,
-                    hintText: 'Password',
-                    icon: Icons.lock,
-                    obscureText: true,
-                  ),
-                  const SizedBox(height: 10),
-                  _buildForgotPassword(context),
-                  const SizedBox(height: 40),
-                  _buildSignInButton(context),
-                  const SizedBox(height: 20),
-                  _buildGoogleSignInButton(context),
-                  const SizedBox(height: 20),
-                  _buildRegisterLink(context),
-                ],
+                    const SizedBox(height: 40),
+                    CustomTextField(
+                      controller: _emailController,
+                      hintText: 'Email',
+                      icon: Icons.person,
+                    ),
+                    const SizedBox(height: 20),
+                    CustomTextField(
+                      controller: _passwordController,
+                      hintText: 'Password',
+                      icon: Icons.lock,
+                      obscureText: true,
+                    ),
+                    const SizedBox(height: 20), // Increased space
+                    _buildForgotPassword(context),
+                    const SizedBox(height: 40),
+                    _buildSignInButton(context),
+                    const SizedBox(height: 20),
+                    _buildGoogleSignInButton(context),
+                    const SizedBox(height: 20),
+                    _buildRegisterLink(context),
+                  ],
+                ),
               ),
             ),
           ),
@@ -239,7 +235,7 @@ class _LoginState extends State<Login> {
       child: ElevatedButton(
         onPressed: () => _handleLogin(context),
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF2164A1),
+          backgroundColor: const Color(0xFF011935),
           padding: const EdgeInsets.symmetric(vertical: 15),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(30),

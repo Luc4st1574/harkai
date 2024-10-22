@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class Home extends StatelessWidget {
   const Home({super.key});
@@ -22,7 +21,7 @@ class Home extends StatelessWidget {
                 child: Column(
                   children: [
                     _buildLocationInfo(),
-                    Expanded(child: _buildMap()),
+                    Expanded(child: _buildPlaceholder(context)), // Updated this line
                     _buildAlertButtons(),
                     _buildBottomButtons(),
                   ],
@@ -73,21 +72,15 @@ class Home extends StatelessWidget {
     );
   }
 
-  Widget _buildMap() {
-    return SizedBox(
+  Widget _buildPlaceholder(BuildContext context) {
+    // Placeholder widget in place of Google Map
+    return const SizedBox(
       height: 300,
-      child: GoogleMap(
-        initialCameraPosition: const CameraPosition(
-          target: LatLng(-8.1116, -79.0289), // Coordinates for Trujillo, Peru
-          zoom: 13,
+      child: Center(
+        child: Text(
+          'Map Placeholder',
+          style: TextStyle(fontSize: 18, color: Colors.grey),
         ),
-        markers: {
-          Marker(
-            markerId: const MarkerId('user_location'),
-            position: const LatLng(-8.1116, -79.0289),
-            icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
-          ),
-        },
       ),
     );
   }
@@ -119,7 +112,9 @@ class Home extends StatelessWidget {
 
   Widget _buildAlertButton(String text, Color color, String iconPath) {
     return ElevatedButton(
-      onPressed: () {},
+      onPressed: () {
+        // Implement alert functionality
+      },
       style: ElevatedButton.styleFrom(
         backgroundColor: color,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
@@ -143,7 +138,9 @@ class Home extends StatelessWidget {
         children: [
           Expanded(
             child: ElevatedButton.icon(
-              onPressed: () {},
+              onPressed: () {
+                // Implement call functionality
+              },
               icon: const Icon(Icons.phone, color: Colors.white),
               label: const Text('CALL EMERGENCIES', style: TextStyle(color: Colors.white)),
               style: ElevatedButton.styleFrom(
@@ -158,7 +155,9 @@ class Home extends StatelessWidget {
             alignment: Alignment.topLeft,
             children: [
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  // Implement chatbot functionality
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
                   shape: const CircleBorder(),

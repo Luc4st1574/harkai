@@ -40,6 +40,8 @@ dependencies:
   google_sign_in: ^6.2.1
   cloud_firestore: ^5.4.3
   google_maps_flutter: ^2.2.0
+  google_fonts: ^6.2.1
+  fluttertoast: ^8.2.8
 
 dev_dependencies:
   flutter_test:

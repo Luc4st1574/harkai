@@ -1,6 +1,10 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'profile.dart';
+import 'package:url_launcher/url_launcher.dart' as url_launcher;
+import 'package:permission_handler/permission_handler.dart';
 
 class Home extends StatelessWidget {
   const Home({super.key});
@@ -25,7 +29,7 @@ class Home extends StatelessWidget {
                     _buildLocationInfo(),
                     Expanded(child: _buildPlaceholder(context)),
                     _buildAlertButtons(),
-                    _buildBottomButtons(),
+                    _buildBottomButtons(context),
                   ],
                 ),
               ),
@@ -159,15 +163,63 @@ class Home extends StatelessWidget {
   }
 
   // Bottom Buttons (Call Emergencies, Chatbot)
-  Widget _buildBottomButtons() {
+  Widget _buildBottomButtons(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Row(
         children: [
           Expanded(
             child: ElevatedButton.icon(
-              onPressed: () {
-                // Implement call functionality
+              onPressed: () async {
+                // Format the phone number with proper URI encoding
+                final phoneNumber = Uri.encodeFull('911');
+                final Uri launchUri = Uri(
+                  scheme: 'tel',
+                  path: phoneNumber,
+                );
+
+                // Check for permission status
+                var status = await Permission.phone.status;
+                
+                if (status.isGranted) {
+                  try {
+                    // Use launchUrl with specific launch mode for phone calls
+                    await url_launcher.launchUrl(
+                      launchUri,
+                      mode: url_launcher.LaunchMode.externalApplication,
+                    );
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Error launching dialer: ${e.toString()}')),
+                      );
+                    }
+                  }
+                } else {
+                  // Request permission if not granted
+                  var result = await Permission.phone.request();
+                  
+                  if (result.isGranted) {
+                    try {
+                      await url_launcher.launchUrl(
+                        launchUri,
+                        mode: url_launcher.LaunchMode.externalApplication,
+                      );
+                    } catch (e) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Error launching dialer: ${e.toString()}')),
+                        );
+                      }
+                    }
+                  } else {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Permission denied to make calls')),
+                      );
+                    }
+                  }
+                }
               },
               icon: const Icon(Icons.phone, color: Colors.white),
               label: const Text('CALL EMERGENCIES', style: TextStyle(color: Colors.white)),

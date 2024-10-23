@@ -3,12 +3,18 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'services/auth_service.dart';
 
-class Signup extends StatelessWidget {
-  Signup({super.key});
+class Signup extends StatefulWidget {
+  const Signup({super.key});
 
+  @override
+  SignupState createState() => SignupState();
+}
+
+class SignupState extends State<Signup> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  bool _isPasswordVisible = false; // Variable to track password visibility
 
   Future<void> _handleGoogleSignIn(BuildContext context) async {
     try {
@@ -29,6 +35,14 @@ class Signup extends StatelessWidget {
         SnackBar(content: Text('Failed to sign in with Google: $e')),
       );
     }
+  }
+
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 
   @override
@@ -71,12 +85,23 @@ class Signup extends StatelessWidget {
                       icon: Icons.email,
                     ),
                     const SizedBox(height: 25), // Increased vertical spacing
-                    // Password field
+                    // Password field with visibility toggle
                     CustomTextField(
                       controller: _passwordController,
                       hintText: 'Password',
                       icon: Icons.lock,
-                      obscureText: true,
+                      obscureText: !_isPasswordVisible, // Control visibility
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                          color: const Color(0xFF57D463),
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _isPasswordVisible = !_isPasswordVisible; // Toggle visibility
+                          });
+                        },
+                      ),
                     ),
                     const SizedBox(height: 45), // Increased vertical spacing
                     // Sign Up button
@@ -193,6 +218,7 @@ class CustomTextField extends StatelessWidget {
   final String hintText;
   final IconData icon;
   final bool obscureText;
+  final Widget? suffixIcon; // Optional suffix icon parameter
 
   const CustomTextField({
     super.key,
@@ -200,6 +226,7 @@ class CustomTextField extends StatelessWidget {
     required this.hintText,
     required this.icon,
     this.obscureText = false,
+    this.suffixIcon, // Add suffix icon parameter
   });
 
   @override
@@ -219,6 +246,7 @@ class CustomTextField extends StatelessWidget {
         focusedBorder: const UnderlineInputBorder(
           borderSide: BorderSide(color: Color(0xFF57D463)),
         ),
+        suffixIcon: suffixIcon, // Include the suffix icon in the decoration
       ),
       keyboardAppearance: Brightness.dark,
       cursorColor: const Color(0xFF57D463),

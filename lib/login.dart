@@ -17,6 +17,7 @@ class Login extends StatefulWidget {
 class LoginState extends State<Login> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  bool _isPasswordVisible = false; // New variable to track password visibility
 
   @override
   void dispose() {
@@ -26,7 +27,7 @@ class LoginState extends State<Login> {
   }
 
   Future<void> _handleGoogleSignIn(BuildContext context) async {
-    try { 
+    try {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
       if (googleUser == null) {
         return; // The user canceled the sign-in
@@ -184,7 +185,18 @@ class LoginState extends State<Login> {
                       controller: _passwordController,
                       hintText: 'Password',
                       icon: Icons.lock,
-                      obscureText: true,
+                      obscureText: !_isPasswordVisible, // Control visibility
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                          color: const Color(0xFF57D463),
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _isPasswordVisible = !_isPasswordVisible; // Toggle visibility
+                          });
+                        },
+                      ),
                     ),
                     const SizedBox(height: 20), // Increased space
                     _buildForgotPassword(context),
@@ -311,6 +323,7 @@ class CustomTextField extends StatelessWidget {
   final IconData icon;
   final bool obscureText;
   final TextEditingController controller;
+  final Widget? suffixIcon; // New optional parameter for suffix icon
 
   const CustomTextField({
     super.key,
@@ -318,6 +331,7 @@ class CustomTextField extends StatelessWidget {
     required this.icon,
     required this.controller,
     this.obscureText = false,
+    this.suffixIcon, // Add suffix icon parameter
   });
 
   @override
@@ -336,6 +350,7 @@ class CustomTextField extends StatelessWidget {
         focusedBorder: const UnderlineInputBorder(
           borderSide: BorderSide(color: Color(0xFF57D463)),
         ),
+        suffixIcon: suffixIcon, // Add the suffix icon to the input decoration
       ),
       cursorColor: const Color(0xFF57D463),
     );

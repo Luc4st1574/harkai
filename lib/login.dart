@@ -305,7 +305,7 @@ class LoginState extends State<Login> {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => Signup()),
+              MaterialPageRoute(builder: (context) => const Signup()),
             );
           },
           child: const Text(

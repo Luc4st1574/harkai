@@ -25,7 +25,7 @@ class LoginState extends State<Login> {
   }
 
   Future<void> _handleGoogleSignIn(BuildContext context) async {
-    try {
+    try { 
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
       if (googleUser == null) {
         return; // The user canceled the sign-in
@@ -122,7 +122,7 @@ class LoginState extends State<Login> {
     );
   }
 
-  void _handleLogin(BuildContext context) {
+  void _handleLogin(BuildContext context) async {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
 
@@ -133,14 +133,18 @@ class LoginState extends State<Login> {
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Logging in...')),
-    );
-
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const Home()),
-    );
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      
+      // No need to manually navigate - StreamBuilder will handle it
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Login failed: ${e.toString()}')),
+      );
+    }
   }
 
   @override

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'profile.dart';
 
 class Home extends StatelessWidget {
   const Home({super.key});
@@ -10,7 +12,7 @@ class Home extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            _buildHeader(),
+            _buildHeader(context),  // Pass context here
             Expanded(
               child: Container(
                 margin: const EdgeInsets.all(16),
@@ -21,7 +23,7 @@ class Home extends StatelessWidget {
                 child: Column(
                   children: [
                     _buildLocationInfo(),
-                    Expanded(child: _buildPlaceholder(context)), // Updated this line
+                    Expanded(child: _buildPlaceholder(context)),
                     _buildAlertButtons(),
                     _buildBottomButtons(),
                   ],
@@ -34,25 +36,47 @@ class Home extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader() {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Image.asset('assets/images/logo.png', height: 50),
-          const Row(
+  // Modified Header to Properly Handle User Authentication State
+  Widget _buildHeader(BuildContext context) {
+    return StreamBuilder<User?>(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (context, snapshot) {
+        final user = snapshot.data;
+        
+        return Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Icon(Icons.account_circle, color: Color(0xFF57D463), size: 30),
-              SizedBox(width: 8),
-              Text('Lucas', style: TextStyle(color: Color(0xFF57D463), fontSize: 18)),
+              Image.asset('assets/images/logo.png', height: 50),
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const Profile()),
+                  );
+                },
+                child: Column(
+                  children: [
+                    const Icon(Icons.account_circle, color: Color(0xFF57D463), size: 30),
+                    const SizedBox(height: 4),
+                    Text(
+                      user != null
+                          ? (user.displayName ?? user.email ?? 'User')
+                          : 'Guest',
+                      style: const TextStyle(color: Color(0xFF57D463), fontSize: 16),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
+  // Location Info Widget
   Widget _buildLocationInfo() {
     return const Padding(
       padding: EdgeInsets.all(16),
@@ -72,6 +96,7 @@ class Home extends StatelessWidget {
     );
   }
 
+  // Placeholder for Map or Content
   Widget _buildPlaceholder(BuildContext context) {
     // Placeholder widget in place of Google Map
     return const SizedBox(
@@ -85,6 +110,7 @@ class Home extends StatelessWidget {
     );
   }
 
+  // Alert Buttons (Fire, Crash, Theft, Dog Alerts)
   Widget _buildAlertButtons() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -110,6 +136,7 @@ class Home extends StatelessWidget {
     );
   }
 
+  // Alert Button Widget
   Widget _buildAlertButton(String text, Color color, String iconPath) {
     return ElevatedButton(
       onPressed: () {
@@ -131,6 +158,7 @@ class Home extends StatelessWidget {
     );
   }
 
+  // Bottom Buttons (Call Emergencies, Chatbot)
   Widget _buildBottomButtons() {
     return Padding(
       padding: const EdgeInsets.all(16),

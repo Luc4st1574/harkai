@@ -124,8 +124,10 @@ class Signup extends StatelessWidget {
       child: ElevatedButton(
         onPressed: () async {
           await AuthService().signup(
+            userName: _usernameController.text,
             email: _emailController.text,
             password: _passwordController.text,
+            context: context,
           );
         },
         style: ElevatedButton.styleFrom(

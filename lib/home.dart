@@ -1,13 +1,77 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'profile.dart';
-import 'package:url_launcher/url_launcher.dart' as url_launcher;
 import 'package:permission_handler/permission_handler.dart';
+import 'package:url_launcher/url_launcher.dart' as url_launcher;
+import 'profile.dart';
 
-class Home extends StatelessWidget {
+// Enum for alert types
+enum AlertType {
+  fire,
+  crash,
+  theft,
+  dog,
+  none
+}
+
+// Class to hold alert information
+class AlertInfo {
+  final String title;
+  final Color color;
+  final String iconPath;
+  final String emergencyNumber;
+
+  AlertInfo({
+    required this.title,
+    required this.color,
+    required this.iconPath,
+    required this.emergencyNumber,
+  });
+}
+
+class Home extends StatefulWidget {
   const Home({super.key});
+
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  AlertType _selectedAlert = AlertType.none;
+
+  // Map to store alert information
+  final Map<AlertType, AlertInfo> alertInfoMap = {
+    AlertType.fire: AlertInfo(
+      title: 'Fire Alert',
+      color: Colors.orange,
+      iconPath: 'assets/images/fire.png',
+      emergencyNumber: '(044) 594473',
+    ),
+    AlertType.crash: AlertInfo(
+      title: 'Crash Alert',
+      color: Colors.blue,
+      iconPath: 'assets/images/car.png',
+      emergencyNumber: '949418268',
+    ),
+    AlertType.theft: AlertInfo(
+      title: 'Theft Alert',
+      color: Colors.red,
+      iconPath: 'assets/images/theft.png',
+      emergencyNumber: '(044) 281374',
+    ),
+    AlertType.dog: AlertInfo(
+      title: 'Dog Alert',
+      color: Colors.green,
+      iconPath: 'assets/images/dog.png',
+      emergencyNumber: '913684363',
+    ),
+  };
+
+  // Get current emergency number based on selected alert
+  String get currentEmergencyNumber {
+    return _selectedAlert == AlertType.none
+        ? '911'
+        : alertInfoMap[_selectedAlert]!.emergencyNumber;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +80,7 @@ class Home extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            _buildHeader(context),  // Pass context here
+            _buildHeader(context),
             Expanded(
               child: Container(
                 margin: const EdgeInsets.all(16),
@@ -40,7 +104,6 @@ class Home extends StatelessWidget {
     );
   }
 
-  // Modified Header to Properly Handle User Authentication State
   Widget _buildHeader(BuildContext context) {
     return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
@@ -80,7 +143,6 @@ class Home extends StatelessWidget {
     );
   }
 
-  // Location Info Widget
   Widget _buildLocationInfo() {
     return const Padding(
       padding: EdgeInsets.all(16),
@@ -100,9 +162,7 @@ class Home extends StatelessWidget {
     );
   }
 
-  // Placeholder for Map or Content
   Widget _buildPlaceholder(BuildContext context) {
-    // Placeholder widget in place of Google Map
     return const SizedBox(
       height: 300,
       child: Center(
@@ -114,7 +174,6 @@ class Home extends StatelessWidget {
     );
   }
 
-  // Alert Buttons (Fire, Crash, Theft, Dog Alerts)
   Widget _buildAlertButtons() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -122,17 +181,17 @@ class Home extends StatelessWidget {
         children: [
           Row(
             children: [
-              Expanded(child: _buildAlertButton('Fire Alert', Colors.orange, 'assets/images/fire.png')),
+              Expanded(child: _buildAlertButton(AlertType.fire)),
               const SizedBox(width: 8),
-              Expanded(child: _buildAlertButton('Crash Alert', Colors.blue, 'assets/images/car.png')),
+              Expanded(child: _buildAlertButton(AlertType.crash)),
             ],
           ),
           const SizedBox(height: 8),
           Row(
             children: [
-              Expanded(child: _buildAlertButton('Theft Alert', Colors.red, 'assets/images/theft.png')),
+              Expanded(child: _buildAlertButton(AlertType.theft)),
               const SizedBox(width: 8),
-              Expanded(child: _buildAlertButton('Dog Alert', Colors.green, 'assets/images/dog.png')),
+              Expanded(child: _buildAlertButton(AlertType.dog)),
             ],
           ),
         ],
@@ -140,29 +199,35 @@ class Home extends StatelessWidget {
     );
   }
 
-  // Alert Button Widget
-  Widget _buildAlertButton(String text, Color color, String iconPath) {
+  Widget _buildAlertButton(AlertType alertType) {
+    final alertInfo = alertInfoMap[alertType]!;
+    final isSelected = _selectedAlert == alertType;
+
     return ElevatedButton(
       onPressed: () {
-        // Implement alert functionality
+        setState(() {
+          _selectedAlert = isSelected ? AlertType.none : alertType;
+        });
       },
       style: ElevatedButton.styleFrom(
-        backgroundColor: color,
+        backgroundColor: alertInfo.color,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
         padding: const EdgeInsets.symmetric(vertical: 12),
+        side: isSelected
+            ? const BorderSide(color: Colors.white, width: 3)
+            : BorderSide.none,
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.asset(iconPath, height: 24, width: 24),
+          Image.asset(alertInfo.iconPath, height: 24, width: 24),
           const SizedBox(width: 8),
-          Text(text, style: const TextStyle(color: Colors.white)),
+          Text(alertInfo.title, style: const TextStyle(color: Colors.white)),
         ],
       ),
     );
   }
 
-  // Bottom Buttons (Call Emergencies, Chatbot)
   Widget _buildBottomButtons(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16),
@@ -171,19 +236,16 @@ class Home extends StatelessWidget {
           Expanded(
             child: ElevatedButton.icon(
               onPressed: () async {
-                // Format the phone number with proper URI encoding
-                final phoneNumber = Uri.encodeFull('911');
+                final phoneNumber = Uri.encodeFull(currentEmergencyNumber);
                 final Uri launchUri = Uri(
                   scheme: 'tel',
                   path: phoneNumber,
                 );
 
-                // Check for permission status
                 var status = await Permission.phone.status;
                 
                 if (status.isGranted) {
                   try {
-                    // Use launchUrl with specific launch mode for phone calls
                     await url_launcher.launchUrl(
                       launchUri,
                       mode: url_launcher.LaunchMode.externalApplication,
@@ -196,7 +258,6 @@ class Home extends StatelessWidget {
                     }
                   }
                 } else {
-                  // Request permission if not granted
                   var result = await Permission.phone.request();
                   
                   if (result.isGranted) {
@@ -222,7 +283,10 @@ class Home extends StatelessWidget {
                 }
               },
               icon: const Icon(Icons.phone, color: Colors.white),
-              label: const Text('CALL EMERGENCIES', style: TextStyle(color: Colors.white)),
+              label: Text(
+                'CALL $currentEmergencyNumber',
+                style: const TextStyle(color: Colors.white),
+              ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF1E3A8A),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),

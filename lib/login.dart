@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'services/auth_service.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'signup.dart';
 import 'home.dart';
@@ -134,9 +135,11 @@ class LoginState extends State<Login> {
     }
 
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
+      final authService = AuthService();
+      await authService.signin(
         email: email,
         password: password,
+        context: context,
       );
       
       // No need to manually navigate - StreamBuilder will handle it

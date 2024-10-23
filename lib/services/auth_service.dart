@@ -87,7 +87,17 @@ class AuthService {
         email: email,
         password: password,
       );
-      // Remove navigation code - StreamBuilder will handle it
+      
+      // Add a short delay before navigating to home
+      await Future.delayed(const Duration(seconds: 1));
+
+      // Navigate to the Home screen
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const Home(),
+        ),
+      );
       
     } on FirebaseAuthException catch (e) {
       String message = "";

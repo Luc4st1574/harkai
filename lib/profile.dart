@@ -1,7 +1,8 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:harkai/services/auth_service.dart';
-
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -49,7 +50,7 @@ class ProfileState extends State<Profile> {
               const SizedBox(height: 32),
               ElevatedButton(
                 onPressed: () {
-                  // xds
+                  _showPasswordResetDialog();
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF57D463),
@@ -126,6 +127,43 @@ class ProfileState extends State<Profile> {
           ),
         ],
       ),
+    );
+  }
+
+  void _showPasswordResetDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Reset Password'),
+          content: const Text('Are you sure you want to reset your password?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: const Text('No'),
+            ),
+            TextButton(
+              onPressed: () async {
+                // Send password reset email
+                if (user?.email != null) {
+                  await FirebaseAuth.instance.sendPasswordResetEmail(email: user!.email!);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Password reset email sent!')),
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('No email found!')),
+                  );
+                }
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: const Text('Yes'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

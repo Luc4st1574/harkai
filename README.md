@@ -34,37 +34,21 @@
   </ul>
 </div>
 
-- **Fire Alert**
+- **Fire Alert 🔥**
 
 ### With this button, you will be able to place a hot point on the map and also call the local fire station to get the help that the situation requires.
 
-<p align="left">
-  <img src="https://github.com/Luc4st1574/Harkai/blob/main/assets/images/fire.png" alt="fire" width="200">
-</p>
-
-- **Car Crash Alert**
+- **Car Crash Alert 🚗**
 
 ### With this button, you will be able to place a hot point on the map and also call the local emergency services and paramedics to get the help that the situation requires.
 
-<p align="left">
-  <img src="https://github.com/Luc4st1574/Harkai/blob/main/assets/images/car.png" alt="car" width="200">
-</p>
-
-- **Theft Alert**
+- **Theft Alert 🥷**
 
 ### With this button, you will be able to place a hot point on the map and also call the local police station to get the help that the situation requires.
 
-<p align="left">
-  <img src="https://github.com/Luc4st1574/Harkai/blob/main/assets/images/theft.png" alt="theft" width="200">
-</p>
-
-- **Dog or Pet Alert**
+- **Dog or Pet Alert 🐶**
 
 ### With this button, you will be able to place a hot point on the map and also call the local animal rescue center to help our fellow pets on the streets.
-
-<p align="left">
-  <img src="https://github.com/Luc4st1574/Harkai/blob/main/assets/images/dog.png" alt="pet" width="200">
-</p>
 
 ## Harkbot
 
